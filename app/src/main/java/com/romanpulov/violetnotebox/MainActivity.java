@@ -1,5 +1,7 @@
 package com.romanpulov.violetnotebox;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.dropbox.core.DbxException;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.ListFolderResult;
@@ -24,19 +25,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Log.d("MainActivity", "Starting auth");
-        //Auth.startOAuth2Authentication(MainActivity.this, getString(R.string.app_key));
-        /*
-        String accessToken = Auth.getOAuth2Token();
-        Log.d("MainActivity", "accessToken=" + accessToken);
-        DropboxClientFactory.init(accessToken);
-        Log.d("MainActivity", "Client init");
-        */
-        Button button = (Button)findViewById(R.id.button);
+
+        Button button = (Button)findViewById(R.id.dropboxManagementButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Auth.startOAuth2Authentication(MainActivity.this, getString(R.string.app_key));
+                Intent intent = new Intent(MainActivity.this, DropboxManagementActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -44,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        /*
         SharedPreferences prefs = getSharedPreferences("dropbox-sample", MODE_PRIVATE);
         String accessToken = prefs.getString("access-token", null);
         if (accessToken == null) {
@@ -58,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             log("access token available, loading data");
             initAndLoadData(accessToken);
         }
+        */
     }
 
     private void initAndLoadData(String accessToken) {
@@ -67,22 +63,29 @@ public class MainActivity extends AppCompatActivity {
         loadData();
     }
 
-    private static class FileListAsyncTask extends AsyncTask<String, Void, ListFolderResult> {
+    private interface Callback {
+        void onDataLoaded(ListFolderResult result);
+        void onError(Exception e);
+    }
+
+    private class FileListAsyncTask extends AsyncTask<String, Void, ListFolderResult> {
+        private ProgressDialog mProgressDialog;
         private final DbxClientV2 mClient;
         private final Callback mCallback;
         private Exception mException;
 
-        public interface Callback {
-            void onDataLoaded(ListFolderResult result);
-            void onError(Exception e);
+        @Override
+        protected void onPreExecute() {
+            mProgressDialog = new ProgressDialog(MainActivity.this);
+            mProgressDialog.setTitle("Loading ...");
+            mProgressDialog.show();
         }
-
 
         @Override
         protected ListFolderResult doInBackground(String... params) {
             try {
                 return mClient.files().listFolder(params[0]);
-            } catch (DbxException e) {
+            } catch (Exception e) {
                 mException = e;
             }
             return null;
@@ -96,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ListFolderResult listFolderResult) {
             super.onPostExecute(listFolderResult);
+            mProgressDialog.dismiss();
 
             if (mException != null) {
                 mCallback.onError(mException);
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void loadData() {
         FileListAsyncTask task = new FileListAsyncTask(DropboxClientFactory.getClient(),
-                new FileListAsyncTask.Callback() {
+                new Callback() {
                     @Override
                     public void onDataLoaded(ListFolderResult result) {
                         log("onDataLoaded:");
@@ -124,27 +128,12 @@ public class MainActivity extends AppCompatActivity {
         );
         task.execute("/Temp");
 
-
-        /*
-
-        String accessToken = Auth.getOAuth2Token();
-        if (accessToken == null) {
-            Log.d("MainActivity", "access token is null, authenticating");
-            Auth.startOAuth2Authentication(MainActivity.this, getString(R.string.app_key));
-        } else {
-            Log.d("MainActivity", "access token not null");
-            DropboxClientFactory.init(accessToken);
-            Log.d("MainActivity", "client factory init");
-            Log.d("MainActivity", "Listing files");
-            try {
-                ListFolderResult r = DropboxClientFactory.getClient().files().listFolder("/Temp/*.*");
-                for (Metadata p : r.getEntries()) {
-                    Log.d("MainActivity", p.getName());
-                }
-            } catch (DbxException e) {
-                e.printStackTrace();
-            }
-        }
-        */
     }
+
+    protected boolean hasToken() {
+        SharedPreferences prefs = getSharedPreferences("dropbox-sample", MODE_PRIVATE);
+        String accessToken = prefs.getString("access-token", null);
+        return accessToken != null;
+    }
+
 }

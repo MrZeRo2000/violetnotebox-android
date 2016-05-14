@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".DropboxManagementActivity">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/authenticateButton"
+        android:text="Authenticate"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/accessTokenTextView"
+        android:layout_below="@id/authenticateButton"
+        android:text="Access Token"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accessTokenTextView"
+        android:id="@+id/connectButton"
+        android:text="Connect"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/connectButton"
+        android:id="@+id/remotePathTextView"
+        android:text="Remote path"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/remotePathTextView"
+        android:inputType="text"
+        android:id="@+id/remotePathEditText"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/remotePathEditText"
+        android:id="@+id/remoteFileNameTextView"
+        android:text="Remote file name"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/remoteFileNameTextView"
+        android:inputType="text"
+        android:id="@+id/remoteFileNameEditText"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/remoteFileNameEditText"
+        android:id="@+id/syncButton"
+        android:text="Sync"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/syncButton"
+        android:id="@+id/messageTextView"
+        android:singleLine="false"
+        android:fontFamily="monospace"
+        />
+
+
+</RelativeLayout>
