@@ -9,33 +9,26 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".DropboxManagementActivity">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/authenticateButton"
-        android:text="Authenticate"
-        />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/accessTokenTextView"
-        android:layout_below="@id/authenticateButton"
-        android:text="Access Token"
+        android:text="@string/layout_access_token"
         />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/accessTokenTextView"
-        android:id="@+id/connectButton"
-        android:text="Connect"
+        android:id="@+id/authenticateButton"
+        android:text="@string/layout_authenticate"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/connectButton"
+        android:layout_below="@id/authenticateButton"
         android:id="@+id/remotePathTextView"
-        android:text="Remote path"
+        android:labelFor="@+id/remotePathEditText"
+        android:text="@string/layout_remote_path"
         />
     <EditText
         android:layout_width="match_parent"
@@ -49,7 +42,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/remotePathEditText"
         android:id="@+id/remoteFileNameTextView"
-        android:text="Remote file name"
+        android:labelFor="@+id/remoteFileNameEditText"
+        android:text="@string/layout_remote_file_name"
         />
     <EditText
         android:layout_width="match_parent"
@@ -63,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/remoteFileNameEditText"
         android:id="@+id/syncButton"
-        android:text="Sync"
+        android:text="@string/layout_sync"
         />
     <TextView
         android:layout_width="match_parent"

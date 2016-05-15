@@ -3,4 +3,14 @@
     <string name="app_key">alrecfmhvkh2wbt</string>
     <string name="access_token_exists">Access token exists</string>
     <string name="access_token_empty">Access token empty</string>
+    <string name="message_successfully_loaded">Successfully loaded %s</string>
+    <string name="message_error_loading">Load error: %s</string>
+    <string name="message_error_auth">No valid token, please, authenticate</string>
+    <string name="message_error_download_file_zero">Error downloading file, please, try again</string>
+    <string name="message_downloading_file_progress">Downloading file ...</string>
+    <string name="layout_access_token">Access Token</string>
+    <string name="layout_authenticate">Authenticate</string>
+    <string name="layout_remote_path">Remote path</string>
+    <string name="layout_remote_file_name">Remote file name</string>
+    <string name="layout_sync">Synchronize</string>
 </resources>
