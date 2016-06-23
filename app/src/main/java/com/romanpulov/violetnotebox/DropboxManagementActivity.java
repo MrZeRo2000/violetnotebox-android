@@ -177,11 +177,11 @@ public class DropboxManagementActivity extends AppCompatActivity {
         String messageText;
         switch (status) {
             case STATUS_ERROR:
-                messageColor = ContextCompat.getColor(this, R.color.colorTextError);
+                messageColor = getResources().getColor(R.color.colorTextError);
                 messageText = getResources().getString(R.string.message_error_loading, message);
                 break;
             case STATUS_OK:
-                messageColor = ContextCompat.getColor(this, R.color.colorTextMessage);
+                messageColor = getResources().getColor(R.color.colorTextMessage);
                 messageText = getResources().getString(R.string.message_successfully_loaded, message);
                 break;
             default:
