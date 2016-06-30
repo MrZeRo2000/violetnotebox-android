@@ -22,10 +22,17 @@
         android:id="@+id/authenticateButton"
         android:text="@string/layout_authenticate"
         />
-    <TextView
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/authenticateButton"
+        android:id="@+id/logoutButton"
+        android:text="@string/layout_logout"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logoutButton"
         android:id="@+id/remotePathTextView"
         android:labelFor="@+id/remotePathEditText"
         android:text="@string/layout_remote_path"

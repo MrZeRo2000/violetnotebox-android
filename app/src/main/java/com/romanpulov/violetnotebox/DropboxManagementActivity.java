@@ -1,6 +1,7 @@
 package com.romanpulov.violetnotebox;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dropbox.core.DbxDownloader;
+import com.dropbox.core.DbxException;
 import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
@@ -72,7 +74,22 @@ public class DropboxManagementActivity extends AppCompatActivity {
         authenticateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setAccessToken(null);
                 Auth.startOAuth2Authentication(DropboxManagementActivity.this, getResources().getString(R.string.app_key));
+            }
+        });
+
+        Button logoutButton = (Button)findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mAccessToken != null) {
+                    DropboxClientFactory.init(mAccessToken);
+                    //DropboxClientFactory.getClient().auth().tokenRevoke();
+                    new TokenRevokeAsyncTask(DropboxClientFactory.getClient(), DropboxManagementActivity.this).execute();
+                    setAccessToken(null);
+                    log("Cleared AccessToken");
+                }
             }
         });
 
@@ -138,6 +155,8 @@ public class DropboxManagementActivity extends AppCompatActivity {
                 String remoteFileName = mPrefs.getString(SHARED_PREFERENCES_REMOTE_FILE_NAME, null);
                 log("sync: " + remotePath + ", " + remoteFileName);
 
+                log("accessToken before getOauth: " + mAccessToken);
+
                 if (mAccessToken == null) {
                     mAccessToken = Auth.getOAuth2Token();
                     if (mAccessToken == null) {
@@ -145,6 +164,8 @@ public class DropboxManagementActivity extends AppCompatActivity {
                         return;
                     }
                 }
+
+                log("accessToken after getOauth: " + mAccessToken);
 
                 log("setting access token:" + mAccessToken);
                 setAccessToken(mAccessToken);
@@ -209,6 +230,31 @@ public class DropboxManagementActivity extends AppCompatActivity {
             mAccessTokenTextView.setText(R.string.access_token_empty);
         else
             mAccessTokenTextView.setText(R.string.access_token_exists);
+    }
+
+    private class TokenRevokeAsyncTask extends AsyncTask<Void, Void, String> {
+        private final DbxClientV2 mClient;
+        private final Context mContext;
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            try {
+                mClient.auth().tokenRevoke();
+                return null;
+            } catch (DbxException e) {
+                return e.getMessage();
+            }
+        }
+
+        public TokenRevokeAsyncTask(DbxClientV2 client, Context context) {
+            mClient = client;
+            mContext = context;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Toast.makeText(mContext, "Token disable result: " + s, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class FileGetAsyncTask extends AsyncTask<String, Void, FileMetadata> {

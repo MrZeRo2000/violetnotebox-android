@@ -10,6 +10,7 @@
     <string name="message_downloading_file_progress">Downloading file ...</string>
     <string name="layout_access_token">Access Token</string>
     <string name="layout_authenticate">Authenticate</string>
+    <string name="layout_logout">Logout</string>
     <string name="layout_remote_path">Remote path</string>
     <string name="layout_remote_file_name">Remote file name</string>
     <string name="layout_sync">Synchronize</string>
