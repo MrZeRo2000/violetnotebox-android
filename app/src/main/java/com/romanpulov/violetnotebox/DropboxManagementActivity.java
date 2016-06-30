@@ -138,10 +138,12 @@ public class DropboxManagementActivity extends AppCompatActivity {
                 String remoteFileName = mPrefs.getString(SHARED_PREFERENCES_REMOTE_FILE_NAME, null);
                 log("sync: " + remotePath + ", " + remoteFileName);
 
-                mAccessToken = Auth.getOAuth2Token();
                 if (mAccessToken == null) {
-                    setMessage(STATUS_ERROR, getResources().getString(R.string.message_error_auth));
-                    return;
+                    mAccessToken = Auth.getOAuth2Token();
+                    if (mAccessToken == null) {
+                        setMessage(STATUS_ERROR, getResources().getString(R.string.message_error_auth));
+                        return;
+                    }
                 }
 
                 log("setting access token:" + mAccessToken);
