@@ -43,6 +43,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
         for (File f : files) {
             Log.d("testListBackupFileNames", f.getAbsolutePath());
+            Log.d("testListBackupFileNames", f.getName());
         }
     }
 }

@@ -23,9 +23,14 @@ import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.WriteMode;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class DropboxManagementActivity extends AppCompatActivity {
@@ -314,5 +319,63 @@ public class DropboxManagementActivity extends AppCompatActivity {
         }
     }
 
+    private class FilePutAsyncTask extends AsyncTask<String, Void, FileMetadata> {
+        private final DbxClientV2 mClient;
+        private final DropboxCallback mCallback;
+        private Exception mException;
+
+
+        public FilePutAsyncTask(DbxClientV2 client, DropboxCallback callback) {
+            mClient = client;
+            mCallback = callback;
+        }
+
+        @Override
+        protected FileMetadata doInBackground(String... params) {
+            String folderName = params[0];
+            File folderFile = new File(folderName);
+
+            File[] files = folderFile.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    String lowFileName = pathname.getAbsolutePath().toLowerCase();
+                    boolean result = lowFileName.endsWith("zip");
+                    if (!result) {
+                        int zipIndex = lowFileName.lastIndexOf("zip");
+                        if (zipIndex > -1) {
+                            String zipFileNamePart = lowFileName.substring(zipIndex, zipIndex + 7);
+                            if (zipFileNamePart.equals("zip.bak"))
+                                result = true;
+                        }
+                    }
+
+                    return result;
+                }
+            });
+
+            for (File f : files) {
+                Log.d("testListBackupFileNames", f.getAbsolutePath());
+                String remoteFileName = f.getName();
+                try {
+                    InputStream inputStream = new FileInputStream(f);
+                    try {
+                        mClient.files().uploadBuilder("AndroidBackup" + "/" + remoteFileName).withMode(WriteMode.OVERWRITE).uploadAndFinish(inputStream);
+                    } finally {
+                        try {
+                            inputStream.close();
+                        } catch (IOException e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                } catch (DbxException | IOException e) {
+                    mException = e;
+                }
+            }
+
+
+            return null;
+        }
+    }
 
 }
