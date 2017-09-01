@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -198,6 +199,46 @@ public class DropboxManagementActivity extends AppCompatActivity {
             }
         });
 
+        Button uploadButton = (Button) findViewById(R.id.uploadButton);
+        uploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                log("accessToken before getOauth: " + mAccessToken);
+
+                if (mAccessToken == null) {
+                    mAccessToken = Auth.getOAuth2Token();
+                    if (mAccessToken == null) {
+                        setMessage(STATUS_ERROR, getResources().getString(R.string.message_error_auth));
+                        return;
+                    }
+                }
+
+                log("accessToken after getOauth: " + mAccessToken);
+
+                log("setting access token:" + mAccessToken);
+                setAccessToken(mAccessToken);
+                updateAccessTokenTextView();
+
+                log("init with access token:" + mAccessToken);
+                DropboxClientFactory.init(mAccessToken);
+
+                FilePutAsyncTask filePutAsyncTask = new FilePutAsyncTask(DropboxClientFactory.getClient(), new DropboxCallback() {
+                    @Override
+                    public void onDataLoaded(FileMetadata fileMetadata) {
+                        setMessage(STATUS_OK, "Uploaded");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        setMessage(STATUS_ERROR, e.getMessage());
+                    }
+                });
+
+                filePutAsyncTask.execute(Environment.getExternalStorageDirectory().toString() + "/" + "VioletNoteBackup" + "/");
+
+            }
+        });
+
     }
 
     private void setMessage(int status, String message) {
@@ -359,7 +400,7 @@ public class DropboxManagementActivity extends AppCompatActivity {
                 try {
                     InputStream inputStream = new FileInputStream(f);
                     try {
-                        mClient.files().uploadBuilder("AndroidBackup" + "/" + remoteFileName).withMode(WriteMode.OVERWRITE).uploadAndFinish(inputStream);
+                        mClient.files().uploadBuilder("/AndroidBackup" + "/" + remoteFileName).withMode(WriteMode.OVERWRITE).uploadAndFinish(inputStream);
                     } finally {
                         try {
                             inputStream.close();
@@ -368,13 +409,23 @@ public class DropboxManagementActivity extends AppCompatActivity {
                         }
 
                     }
-                } catch (DbxException | IOException e) {
+                } catch (DbxException | IOException | IllegalArgumentException e) {
                     mException = e;
                 }
             }
 
-
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(FileMetadata fileMetadata) {
+            super.onPostExecute(fileMetadata);
+
+            if (mException != null) {
+                mCallback.onError(mException);
+            } else {
+                mCallback.onDataLoaded(fileMetadata);
+            }
         }
     }
 

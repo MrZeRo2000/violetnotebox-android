@@ -74,6 +74,21 @@
         android:singleLine="false"
         android:fontFamily="monospace"
         />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/messageTextView"
+        android:id="@+id/uploadButton"
+        android:text="@string/layout_upload"
+        />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/uploadButton"
+        android:id="@+id/uploadMessageTextView"
+        android:singleLine="false"
+        android:fontFamily="monospace"
+        />
 
 </RelativeLayout>
