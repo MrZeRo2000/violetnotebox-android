@@ -31,9 +31,13 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
                 if (!result) {
                     int zipIndex = lowFileName.lastIndexOf("zip");
                     if (zipIndex > -1) {
+                        if (lowFileName.matches("\\S*zip.bak[0-9]{2}"))
+                            result = true;
+                        /*
                         String zipFileNamePart = lowFileName.substring(zipIndex, zipIndex + 7);
                         if (zipFileNamePart.equals("zip.bak"))
                             result = true;
+                            */
                     }
                 }
 
@@ -42,8 +46,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         });
 
         for (File f : files) {
-            Log.d("testListBackupFileNames", f.getAbsolutePath());
-            Log.d("testListBackupFileNames", f.getName());
+            Log.d("testListBackupFileNames", f.getAbsolutePath() + "(" + f.getName() + ")");
         }
     }
 }
