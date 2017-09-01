@@ -394,13 +394,15 @@ public class DropboxManagementActivity extends AppCompatActivity {
                 }
             });
 
+            FileMetadata result = null;
+
             for (File f : files) {
                 Log.d("testListBackupFileNames", f.getAbsolutePath());
                 String remoteFileName = f.getName();
                 try {
                     InputStream inputStream = new FileInputStream(f);
                     try {
-                        mClient.files().uploadBuilder("/AndroidBackup" + "/" + remoteFileName).withMode(WriteMode.OVERWRITE).uploadAndFinish(inputStream);
+                        result = mClient.files().uploadBuilder("/AndroidBackup" + "/" + remoteFileName).withMode(WriteMode.OVERWRITE).uploadAndFinish(inputStream);
                     } finally {
                         try {
                             inputStream.close();
@@ -414,7 +416,7 @@ public class DropboxManagementActivity extends AppCompatActivity {
                 }
             }
 
-            return null;
+            return result;
         }
 
         @Override
